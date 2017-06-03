@@ -45,6 +45,7 @@ class App extends Component {
             room.subscribe(Room.eventType.room_updated, room => {
                 console.log('[app room_updated]', room);
             });
+
             room.subscribe(Room.eventType.message_received, (room, message) => {
                 console.log('[app message_received]', message);
 

@@ -34,7 +34,6 @@ export default (state = INITIAL_STATE, action = {}) => {
             return { user: action.payload.user, room: action.payload.room, messages: action.payload.messages };
 
         case 'chat_received_message':
-            console.log('[ChatReducer] implement chat_received_message', action.payload);
             return { ...state, messages: [action.payload, ...state.messages] };
 
         default:

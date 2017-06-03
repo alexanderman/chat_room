@@ -39,11 +39,6 @@ function _fromJson(room, props) {
     }, room);
 }
 
-/**
- * TODO:
- * - deprecate connect method
- * - use subscribe method to connect individually to each event
- */
 
 class Room {
     constructor(chatPath, props) {
@@ -79,7 +74,8 @@ class Room {
             },
             [Room.eventType.message_received]: () => {
                 this._dbMessagesRef.off();
-                this._dbMessagesRef.limitToLast(100).on('child_added', this.onMessageReceived.bind(this));
+                this._dbMessagesRef.on('child_added', this.onMessageReceived.bind(this));
+                //this._dbMessagesRef.limitToLast(100).on('child_added', this.onMessageReceived.bind(this));
             },
             [Room.eventType.room_updated]: () => {
                 this._dbRoomRef.off();
@@ -119,7 +115,7 @@ class Room {
     }
 
     _cb(eventType,  ...args) {
-        (this._cbMap[eventType] || function(){ console.log('[room _cb] no callback for eventType', eventType); })(this, ...args);
+        (this._cbMap[eventType] || function(){ console.error('[room _cb] no callback for eventType', eventType); })(this, ...args);
     }
 
     _dbUserRoomsRef(userId) {
@@ -131,34 +127,26 @@ class Room {
     onUpdated(snapshot) {
         if (!snapshot || !snapshot.val()) {
             this.status = 'deleted';
-            console.log('[room onUpdated] not exists', this);
+            //console.log('[room onUpdated] not exists', this);
             return;
         }
 
         _fromJson(this, snapshot.val());
-        console.log('[room onUpdated]', this);
+        //console.log('[room onUpdated]', this);
         this._cb(Room.eventType.room_updated);
     }
 
     onUsersUpdated(snapshot) {
         this.users = Room.objToIdList(snapshot.val());
-        console.log('[room onUsersUpdated]', this);
+        //console.log('[room onUsersUpdated]', this);
         this._cb(Room.eventType.users_updated);
     }
 
     onMessageReceived(snapshot) {
         let message = snapshot.val();
-
-        /** if this is message I sent, just change the status, it's already in list */
-        if (message.uid === this.uid) {
-            console.log('[room onMessageReceived] my message, updating status');
-            delete message.isSending;
-            return;
-        }
-
         /** messages are in reverse order to serve Gifted Chat */
         this.messages = [message, ...this.messages];
-        console.log('[room onMessageReceived]', this);
+        //console.log('[room onMessageReceived]', this);
         this._cb(Room.eventType.message_received, message);
     }
 
@@ -170,17 +158,9 @@ class Room {
         });
     }
 
-    /**
-     * TODO: add message immediately to messages list in status "sending", update the status on received
-     * change actions accordingly
-     * @param message
-     */
     sendMessage(message) {
-        this.messages = [message, ...this.messages];
-        this._cb(Room.eventType.message_received, message);
+        /** this._dbMessagesRef.push work in sync mode, onMessageReceived gets called immediately */
         this._dbMessagesRef.push(message);
-        /** status is not persisted, only for senders ui */
-        message.isSending = true;
     }
 
     /** removes users from room, room.users will be updated onUsersUpdated */

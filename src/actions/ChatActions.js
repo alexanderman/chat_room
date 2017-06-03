@@ -20,8 +20,18 @@ function toChatMessages(roomMessages) {
     });
 }
 
+function toDbMessage(message) {
+    return {
+        createdAt: message.createdAt.getTime(),
+        text: message.text,
+        uid: message.user.id,
+        clientId: message._id /** id received from gifted chat */
+    };
+}
+
+
 export function initChat(user, room) {
-    console.log('[chat actions] initChat', user, room);
+    //console.log('[chat actions] initChat', user, room);
 
     return {
         type: 'chat_initiate',
@@ -29,9 +39,8 @@ export function initChat(user, room) {
     };
 }
 
-
 export function receiveMessage(message) {
-    console.log('[chat actions] receiveMessage', message);
+    //console.log('[chat actions] receiveMessage', message, toChatMessages([message])[0]);
     return {
         type: 'chat_received_message',
         payload: toChatMessages([message])[0]
@@ -40,16 +49,9 @@ export function receiveMessage(message) {
 
 
 export function sendMessage(room, message) {
-    console.log('[chat actions] sendMessage', message);
+    //console.log('[chat actions] sendMessage', message);
 
-    let msg = {
-        createdAt: message.createdAt.getTime(),
-        text: message.text,
-        uid: message.user.id,
-        clientId: message._id /** id received from gifted chat */
-    };
-
-    room.sendMessage(msg);
+    room.sendMessage(toDbMessage(message));
 
     /** return function to avoid calling reducer */
     return (dispatch, getState) => {};

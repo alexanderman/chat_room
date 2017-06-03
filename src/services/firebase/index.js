@@ -10,8 +10,9 @@ const CHAT_PATH = 'chat';
 
 
 function createRoom(chat) {
-    let room = chat.createRoom([], { name: 'place1' }, () => {});
-    room.addUsers([FirebaseService.currentUser().uid]);
+    console.log('createRoom called');
+    let room = chat.createRoom([], { name: 'TEST REMOVE' }, () => {});
+    //room.addUsers([FirebaseService.currentUser().uid]);
 }
 
 

@@ -20,10 +20,6 @@ function uniqueKeys(list) {
     return arr;
 }
 
-function getDbUserRoomsRef(roomId) {
-    return firebase.database().ref(this.path(['userRooms', firebase.auth().currentUser.uid, roomId]));
-}
-
 
 class RoomFactory {
     constructor(chatPath) {

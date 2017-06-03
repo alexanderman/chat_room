@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 import { GiftedChat } from 'react-native-gifted-chat';
 import FirebaseService from '../../services/firebase';
 import { connect } from 'react-redux';
-import { sendMessage, receiveMessage } from '../../actions';
+import { sendMessage } from '../../actions';
 
 
 
@@ -35,5 +35,5 @@ const mapStateToProps = state => {
     return state.chat;
 };
 
-export default connect(mapStateToProps, { sendMessage, receiveMessage })(GChat);
+export default connect(mapStateToProps, { sendMessage })(GChat);
 
